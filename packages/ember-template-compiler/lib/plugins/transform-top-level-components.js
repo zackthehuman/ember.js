@@ -25,12 +25,12 @@ function hasSingleComponentNode(body, callback) {
     let curr = body[i];
 
     // text node with whitespace only
-    if (curr.type === "TextNode" && /^[\s]*$/.test(curr.chars)) { continue; }
+    if (curr.type === 'TextNode' && /^[\s]*$/.test(curr.chars)) { continue; }
 
     // has multiple root elements if we've been here before
     if (nodeCount++ > 0) { return false; }
 
-    if (curr.type === "ComponentNode" || curr.type === "ElementNode") {
+    if (curr.type === 'ComponentNode' || curr.type === 'ElementNode') {
       lastComponentNode = curr;
       lastIndex = i;
     }

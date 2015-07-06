@@ -1,4 +1,4 @@
-import { render, internal } from "htmlbars-runtime";
+import { render, internal } from 'htmlbars-runtime';
 
 export default function attributes(morph, env, scope, template, parentNode, visitor) {
   let state = morph.state;

@@ -920,7 +920,7 @@ QUnit.test('non-block without properties replaced with a fragment when the conte
 
   view = appendViewFor('<non-block />');
 
-  equal(view.$().html(), 'In layout', "Just the fragment was used");
+  equal(view.$().html(), 'In layout', 'Just the fragment was used');
 });
 
 QUnit.test('non-block without properties replaced with a fragment when the content is multiple elements', function() {
@@ -928,7 +928,7 @@ QUnit.test('non-block without properties replaced with a fragment when the conte
 
   view = appendViewFor('<non-block />');
 
-  equal(view.$().html(), '<div>This is a</div><div>fragment</div>', "Just the fragment was used");
+  equal(view.$().html(), '<div>This is a</div><div>fragment</div>', 'Just the fragment was used');
 });
 
 QUnit.test('non-block without properties replaced with a div', function() {
@@ -939,31 +939,31 @@ QUnit.test('non-block without properties replaced with a div', function() {
   view = appendViewFor('<non-block />');
 
   equal(view.$().text(), '  In layout  ');
-  ok(view.$().html().match(/^  <div id="[^"]*" class="ember-view">In layout<\/div>  $/), "The root element has gotten the default class and ids");
-  ok(view.$('div.ember-view[id]').length === 1, "The div became an Ember view");
+  ok(view.$().html().match(/^  <div id="[^"]*" class="ember-view">In layout<\/div>  $/), 'The root element has gotten the default class and ids');
+  ok(view.$('div.ember-view[id]').length === 1, 'The div became an Ember view');
 
   run(view, 'rerender');
 
   equal(view.$().text(), '  In layout  ');
-  ok(view.$().html().match(/^  <div id="[^"]*" class="ember-view">In layout<\/div>  $/), "The root element has gotten the default class and ids");
-  ok(view.$('div.ember-view[id]').length === 1, "The non-block tag name was used");
+  ok(view.$().html().match(/^  <div id="[^"]*" class="ember-view">In layout<\/div>  $/), 'The root element has gotten the default class and ids');
+  ok(view.$('div.ember-view[id]').length === 1, 'The non-block tag name was used');
 });
 
 QUnit.test('non-block without properties replaced with identity element', function() {
   registry.register('template:components/non-block', compile('<non-block such="{{attrs.stability}}">In layout</non-block>'));
 
   view = appendViewFor('<non-block stability={{view.stability}} />', {
-    stability: "stability"
+    stability: 'stability'
   });
 
   let node = view.$()[0];
   equal(view.$().text(), 'In layout');
-  ok(view.$().html().match(/^<non-block id="[^"]*" such="stability" class="ember-view">In layout<\/non-block>$/), "The root element has gotten the default class and ids");
-  ok(view.$('non-block.ember-view[id][such=stability]').length === 1, "The non-block tag name was used");
+  ok(view.$().html().match(/^<non-block id="[^"]*" such="stability" class="ember-view">In layout<\/non-block>$/), 'The root element has gotten the default class and ids');
+  ok(view.$('non-block.ember-view[id][such=stability]').length === 1, 'The non-block tag name was used');
 
   run(() => view.set('stability', 'stability!'));
 
-  strictEqual(view.$()[0], node, "the DOM node has remained stable");
+  strictEqual(view.$()[0], node, 'the DOM node has remained stable');
   equal(view.$().text(), 'In layout');
   ok(view.$().html().match(/^<non-block id="[^"]*" such="stability!" class="ember-view">In layout<\/non-block>$/), 'The root element has gotten the default class and ids');
 });
@@ -975,11 +975,11 @@ QUnit.test('non-block with class replaced with a div merges classes', function()
     outer: 'outer'
   });
 
-  equal(view.$('div').attr('class'), "inner-class outer ember-view", "the classes are merged");
+  equal(view.$('div').attr('class'), 'inner-class outer ember-view', 'the classes are merged');
 
   run(() => view.set('outer', 'new-outer'));
 
-  equal(view.$('div').attr('class'), "inner-class new-outer ember-view", "the classes are merged");
+  equal(view.$('div').attr('class'), 'inner-class new-outer ember-view', 'the classes are merged');
 });
 
 QUnit.test('non-block with class replaced with a identity element merges classes', function() {
@@ -989,11 +989,11 @@ QUnit.test('non-block with class replaced with a identity element merges classes
     outer: 'outer'
   });
 
-  equal(view.$('non-block').attr('class'), "inner-class outer ember-view", "the classes are merged");
+  equal(view.$('non-block').attr('class'), 'inner-class outer ember-view', 'the classes are merged');
 
   run(() => view.set('outer', 'new-outer'));
 
-  equal(view.$('non-block').attr('class'), "inner-class new-outer ember-view", "the classes are merged");
+  equal(view.$('non-block').attr('class'), 'inner-class new-outer ember-view', 'the classes are merged');
 });
 
 QUnit.test('non-block rendering a fragment', function() {
@@ -1004,14 +1004,14 @@ QUnit.test('non-block rendering a fragment', function() {
     second: 'second1'
   });
 
-  equal(view.$().html(), '<p>first1</p><p>second1</p>', "No wrapping element was created");
+  equal(view.$().html(), '<p>first1</p><p>second1</p>', 'No wrapping element was created');
 
   run(view, 'setProperties', {
     first: 'first2',
     second: 'second2'
   });
 
-  equal(view.$().html(), '<p>first2</p><p>second2</p>', "The fragment was updated");
+  equal(view.$().html(), '<p>first2</p><p>second2</p>', 'The fragment was updated');
 });
 
   QUnit.test('block without properties', function() {
