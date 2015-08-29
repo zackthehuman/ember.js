@@ -46,13 +46,89 @@
   the current view's `controller`.
 */
 
+function Scope(parent) {
+  this.self = null;
+  this.blocks = {};
+  this.component = null;
+  this.view = null;
+  this.attrs = null;
+  this.locals = {};
+  this.localPresent = {};
+  this.overrideController = false;
+  this.parent = parent;
+}
+
+let proto = Scope.prototype;
+
+proto.getSelf = function() {
+  return this.self || this.parent.getSelf();
+};
+
+proto.bindSelf = function(self) {
+  this.self = self;
+};
+
+proto.getBlock = function(name) {
+  return this.blocks[name] || this.parent.getBlock(name);
+};
+
+proto.bindBlock = function(name, block) {
+  this.blocks[name] = block;
+};
+
+proto.getComponent = function() {
+  return this.component || this.parent.getComponent();
+};
+
+proto.bindComponent = function(component) {
+  this.component = component;
+};
+
+proto.getView = function() {
+  return this.view || this.parent.getView();
+};
+
+proto.bindView = function(view) {
+  this.view = view;
+};
+
+proto.getAttrs = function() {
+  return this.attrs || this.parent.getAttrs();
+};
+
+proto.bindAttrs = function(attrs) {
+  this.attrs = attrs;
+};
+
+proto.hasLocal = function(name) {
+  return this.localPresent[name] || this.parent.hasLocal(name);
+};
+
+proto.hasOwnLocal = function(name) {
+  return this.localPresent[name];
+};
+
+proto.getLocal = function(name) {
+  return this.localPresent[name] ? this.locals[name] : this.parent.getLocal(name);
+};
+
+proto.bindLocal = function(name, value) {
+  this.localPresent[name] = true;
+  this.locals[name] = value;
+};
+
+const EMPTY = {
+  getSelf() { return null; },
+  getBlock(name) { return null; },
+  getComponent() { return null; },
+  getAttrs() { return null; },
+  getLocal(name) { return null; }
+};
+
 export default function createFreshScope() {
-  return {
-    self: null,
-    blocks: {},
-    component: null,
-    attrs: null,
-    locals: {},
-    localPresent: {}
-  };
+  return new Scope(EMPTY);
+}
+
+export function createChildScope(parent) {
+  return new Scope(parent);
 }

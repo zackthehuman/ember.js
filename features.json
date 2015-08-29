@@ -1,7 +1,7 @@
 {
   "features": {
     "features-stripped-test": null,
-    "ember-htmlbars-component-generation": null,
+    "ember-htmlbars-component-generation": true,
     "ember-testing-checkbox-helpers": null,
     "ember-application-visit": null,
     "ember-routing-route-configured-query-params": null,
