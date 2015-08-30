@@ -16,13 +16,15 @@ export default function bindSelf(env, scope, _self) {
   }
 
   if (self && self.isView) {
-    scope.bindLocal('view', self, 'view');
-    scope.bindLocal('controller', self.getKey('controller'));
+    scope.bindLocal('view', newStream(self, 'view'));
+    scope.bindLocal('controller', newStream(self, '').getKey('controller'));
+
+    let selfStream = newStream(self, '');
 
     if (self.isGlimmerComponent) {
-      scope.bindSelf(newStream(self, ''));
+      scope.bindSelf(selfStream);
     } else {
-      scope.bindSelf(newStream(self.getKey('context'), ''));
+      scope.bindSelf(newStream(selfStream.getKey('context'), ''));
     }
 
     return;

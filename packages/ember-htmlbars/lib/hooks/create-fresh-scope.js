@@ -1,3 +1,5 @@
+import ProxyStream from 'ember-metal/streams/proxy-stream';
+
 /*
   Ember's implementation of HTMLBars creates an enriched scope.
 
@@ -47,13 +49,13 @@
 */
 
 function Scope(parent) {
-  this.self = null;
-  this.blocks = {};
-  this.component = null;
-  this.view = null;
-  this.attrs = null;
-  this.locals = {};
-  this.localPresent = {};
+  this._self = null;
+  this._blocks = {};
+  this._component = null;
+  this._view = null;
+  this._attrs = null;
+  this._locals = {};
+  this._localPresent = {};
   this.overrideController = false;
   this.parent = parent;
 }
@@ -61,68 +63,93 @@ function Scope(parent) {
 let proto = Scope.prototype;
 
 proto.getSelf = function() {
-  return this.self || this.parent.getSelf();
+  return this._self || this.parent.getSelf();
 };
 
 proto.bindSelf = function(self) {
-  this.self = self;
+  this._self = self;
+};
+
+proto.updateSelf = function(self, key) {
+  let existing = this._self;
+
+  if (existing) {
+    existing.setSource(self);
+  } else {
+    this._self = new ProxyStream(self, key);
+  }
 };
 
 proto.getBlock = function(name) {
-  return this.blocks[name] || this.parent.getBlock(name);
+  return this._blocks[name] || this.parent.getBlock(name);
+};
+
+proto.hasBlock = function(name) {
+  return !!(this._blocks[name] || this.parent.hasBlock(name));
 };
 
 proto.bindBlock = function(name, block) {
-  this.blocks[name] = block;
+  this._blocks[name] = block;
 };
 
 proto.getComponent = function() {
-  return this.component || this.parent.getComponent();
+  return this._component || this.parent.getComponent();
 };
 
 proto.bindComponent = function(component) {
-  this.component = component;
+  this._component = component;
 };
 
 proto.getView = function() {
-  return this.view || this.parent.getView();
+  return this._view || this.parent.getView();
 };
 
 proto.bindView = function(view) {
-  this.view = view;
+  this._view = view;
 };
 
 proto.getAttrs = function() {
-  return this.attrs || this.parent.getAttrs();
+  return this._attrs || this.parent.getAttrs();
 };
 
 proto.bindAttrs = function(attrs) {
-  this.attrs = attrs;
+  this._attrs = attrs;
 };
 
 proto.hasLocal = function(name) {
-  return this.localPresent[name] || this.parent.hasLocal(name);
+  return this._localPresent[name] || this.parent.hasLocal(name);
 };
 
 proto.hasOwnLocal = function(name) {
-  return this.localPresent[name];
+  return this._localPresent[name];
 };
 
 proto.getLocal = function(name) {
-  return this.localPresent[name] ? this.locals[name] : this.parent.getLocal(name);
+  return this._localPresent[name] ? this._locals[name] : this.parent.getLocal(name);
 };
 
 proto.bindLocal = function(name, value) {
-  this.localPresent[name] = true;
-  this.locals[name] = value;
+  this._localPresent[name] = true;
+  this._locals[name] = value;
 };
 
 const EMPTY = {
   getSelf() { return null; },
+  bindSelf(self) { return null; },
+  updateSelf(self, key) { return null; },
   getBlock(name) { return null; },
+  bindBlock(name, block) { return null; },
+  hasBlock(name) { return false; },
   getComponent() { return null; },
+  bindComponent() { return null; },
+  getView() { return null; },
+  bindView(view) { return null; },
   getAttrs() { return null; },
-  getLocal(name) { return null; }
+  bindAttrs(attrs) { return null; },
+  hasLocal(name) { return false; },
+  hasOwnLocal(name) { return false; },
+  getLocal(name) { return null; },
+  bindLocal(name, value) { return null; }
 };
 
 export default function createFreshScope() {
