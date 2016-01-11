@@ -32,6 +32,7 @@ import EmptyObject from 'ember-metal/empty_object';
 */
 let members = {
   cache: ownMap,
+  descs: inheritedMap,
   watching: inheritedMap,
   mixins: inheritedMap,
   bindings: inheritedMap,
@@ -53,6 +54,7 @@ function Meta(obj, parentMeta) {
   this._deps = undefined;
   this._chainWatchers = undefined;
   this._chains = undefined;
+  this._descs = undefined;
   // used only internally
   this.source = obj;
 

@@ -83,24 +83,22 @@ export function DEFAULT_GETTER_FUNCTION(name) {
   @param {*} [data] something other than a descriptor, that will
     become the explicit value of this property.
 */
-export function defineProperty(obj, keyName, desc, data, meta) {
-  var possibleDesc, existingDesc, watching, value;
+export function defineProperty(obj, keyName, desc, data/*, meta*/) {
+  let meta = arguments[4] || metaFor(obj);
+  let watchEntry = meta.peekWatching(keyName);
+  let existingDesc = meta.peekDescs(keyName);
 
-  if (!meta) {
-    meta = metaFor(obj);
-  }
-  var watchEntry = meta.peekWatching(keyName);
-  possibleDesc = obj[keyName];
-  existingDesc = (possibleDesc !== null && typeof possibleDesc === 'object' && possibleDesc.isDescriptor) ? possibleDesc : undefined;
-
-  watching = watchEntry !== undefined && watchEntry > 0;
+  let watching = watchEntry !== undefined && watchEntry > 0;
 
   if (existingDesc) {
     existingDesc.teardown(obj, keyName);
   }
 
+  let value;
+
+  // is this instanceof needed?
   if (desc instanceof Descriptor) {
-    value = desc;
+    meta.writeDescs(keyName, desc);
     if (isEnabled('mandatory-setter')) {
       if (watching) {
         Object.defineProperty(obj, keyName, {
@@ -117,9 +115,10 @@ export function defineProperty(obj, keyName, desc, data, meta) {
     }
     if (desc.setup) { desc.setup(obj, keyName); }
   } else {
-    if (desc == null) {
-      value = data;
+    // add insert undefined subroutine, to do this more efficiently
+    meta.writeDescs(keyName, false);
 
+    if (desc == null) {
       if (isEnabled('mandatory-setter')) {
         if (watching) {
           meta.writeValues(keyName, data);
@@ -136,8 +135,6 @@ export function defineProperty(obj, keyName, desc, data, meta) {
         obj[keyName] = data;
       }
     } else {
-      value = desc;
-
       // fallback to ES5
       Object.defineProperty(obj, keyName, desc);
     }

@@ -60,11 +60,11 @@ export function get(obj, keyName) {
     return obj;
   }
 
-  var meta = peekMeta(obj);
-  var value = obj[keyName];
-  var desc = (value !== null && typeof value === 'object' && value.isDescriptor) ? value : undefined;
-  var ret;
+  let meta = peekMeta(obj);
 
+  // soon, obj[keyName] will be the primary branch, as it will include normal
+  // values and descriptor based values
+  let desc = meta && meta.peekDescs(keyName);
   if (desc === undefined && isPath(keyName)) {
     return _getPath(obj, keyName);
   }
@@ -72,6 +72,8 @@ export function get(obj, keyName) {
   if (desc) {
     return desc.get(obj, keyName);
   } else {
+    let ret;
+    let value = obj[keyName];
     if (isEnabled('mandatory-setter')) {
       if (meta && meta.peekWatching(keyName) > 0) {
         ret = meta.peekValues(keyName);

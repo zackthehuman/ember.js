@@ -92,7 +92,6 @@ QUnit.test('If a component is registered, it is used', function() {
   equal(jQuery('div.testing123', '#qunit-fixture').text(), 'hello world', 'The component is composed correctly');
 });
 
-
 QUnit.test('Late-registered components can be rendered with custom `layout` property', function() {
   Ember.TEMPLATES.application = compile('<div id=\'wrapper\'>there goes {{my-hero}}</div>');
 
