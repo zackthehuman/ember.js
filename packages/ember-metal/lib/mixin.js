@@ -346,7 +346,8 @@ function updateObserversAndListeners(obj, key, observerOrListener, pathsKey, upd
 }
 
 function replaceObserversAndListeners(obj, key, observerOrListener) {
-  var prev = Object.getOwnPropertyDescriptor({foo() { }}, 'foo').value;
+  var desc = Object.getOwnPropertyDescriptor(obj, key);
+  var prev = desc && desc.value;
 
   if ('function' === typeof prev) {
     updateObserversAndListeners(obj, key, prev, '__ember_observes__', removeObserver);
@@ -394,7 +395,6 @@ function applyMixin(obj, mixins, partial) {
     }
 
     if (desc === undefined && value === undefined) { continue; }
-
     replaceObserversAndListeners(obj, key, value);
     detectBinding(obj, key, value, m);
     defineProperty(obj, key, desc, value, m);
