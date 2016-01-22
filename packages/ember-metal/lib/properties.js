@@ -132,7 +132,6 @@ export function defineProperty(obj, keyName, desc, data/*, meta*/) {
     // add insert undefined subroutine, to do this more efficiently
     meta.writeDescs(keyName, false);
     if (desc == null) {
-
       meta.writeValues(keyName, data);
       if (isEnabled('mandatory-setter') && watching) {
         Object.defineProperty(obj, keyName, {

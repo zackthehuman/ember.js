@@ -4,16 +4,12 @@
 
 import Ember from 'ember-metal/core';
 import { assert } from 'ember-metal/debug';
-import isEnabled from 'ember-metal/features';
 import EmberError from 'ember-metal/error';
 import {
   isGlobal as detectIsGlobal,
   isPath,
   hasThis as pathHasThis
 } from 'ember-metal/path_cache';
-import {
-  peekMeta
-} from 'ember-metal/meta';
 
 var FIRST_KEY = /^([^\.]+)/;
 
