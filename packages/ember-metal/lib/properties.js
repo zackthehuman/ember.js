@@ -99,40 +99,52 @@ export function defineProperty(obj, keyName, desc, data/*, meta*/) {
   // is this instanceof needed?
   if (desc instanceof Descriptor) {
     meta.writeDescs(keyName, desc);
-    if (isEnabled('mandatory-setter')) {
-      if (watching) {
-        Object.defineProperty(obj, keyName, {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: value
-        });
-      } else {
-        obj[keyName] = value;
+
+    Object.defineProperty(obj, keyName, {
+      configurable: true,
+      enumerable: true,
+      get() {
+        return metaFor(this).peekDescs(keyName).get(this, keyName);
+      },
+      set(value) {
+        return metaFor(this).peekDescs(keyName).set(this, keyName, value);
       }
-    } else {
-      obj[keyName] = value;
-    }
+    });
+
+    // if (isEnabled('mandatory-setter')) {
+    //   if (watching) {
+    //     Object.defineProperty(obj, keyName, {
+    //       configurable: true,
+    //       enumerable: true,
+    //       writable: true,
+    //       value: value
+    //     });
+    //   } else {
+    //     obj[keyName] = value;
+    //   }
+    // } else {
+    //   obj[keyName] = value;
+    // }
     if (desc.setup) { desc.setup(obj, keyName); }
   } else {
     // add insert undefined subroutine, to do this more efficiently
     meta.writeDescs(keyName, false);
-
     if (desc == null) {
-      if (isEnabled('mandatory-setter')) {
-        if (watching) {
-          meta.writeValues(keyName, data);
-          Object.defineProperty(obj, keyName, {
-            configurable: true,
-            enumerable: true,
-            set: MANDATORY_SETTER_FUNCTION(keyName),
-            get: DEFAULT_GETTER_FUNCTION(keyName)
-          });
-        } else {
-          obj[keyName] = data;
-        }
+
+      if (isEnabled('mandatory-setter') && watching) {
+        meta.writeValues(keyName, data);
+        Object.defineProperty(obj, keyName, {
+          configurable: true,
+          enumerable: true,
+          set: MANDATORY_SETTER_FUNCTION(keyName),
+          get: DEFAULT_GETTER_FUNCTION(keyName)
+        });
       } else {
-        obj[keyName] = data;
+        Object.defineProperty(obj, keyName, {
+          configurable: true,
+          writable: true,
+          value: data
+        });
       }
     } else {
       // fallback to ES5

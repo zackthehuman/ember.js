@@ -60,37 +60,18 @@ export function get(obj, keyName) {
     return obj;
   }
 
-  let meta = peekMeta(obj);
-
-  // soon, obj[keyName] will be the primary branch, as it will include normal
-  // values and descriptor based values
-  let desc = meta && meta.peekDescs(keyName);
-  if (desc === undefined && isPath(keyName)) {
+  if (isPath(keyName)) {
     return _getPath(obj, keyName);
   }
 
-  if (desc) {
-    return desc.get(obj, keyName);
-  } else {
-    let ret;
-    let value = obj[keyName];
-    if (isEnabled('mandatory-setter')) {
-      if (meta && meta.peekWatching(keyName) > 0) {
-        ret = meta.peekValues(keyName);
-      } else {
-        ret = value;
-      }
-    } else {
-      ret = value;
-    }
+  let ret = obj[keyName];
 
-    if (ret === undefined &&
-        'object' === typeof obj && !(keyName in obj) && 'function' === typeof obj.unknownProperty) {
-      return obj.unknownProperty(keyName);
-    }
-
-    return ret;
+  if (ret === undefined &&
+      'object' === typeof obj && !(keyName in obj) && 'function' === typeof obj.unknownProperty) {
+    return obj.unknownProperty(keyName);
   }
+
+  return ret;
 }
 
 /**

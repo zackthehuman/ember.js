@@ -346,7 +346,7 @@ function updateObserversAndListeners(obj, key, observerOrListener, pathsKey, upd
 }
 
 function replaceObserversAndListeners(obj, key, observerOrListener) {
-  var prev = obj[key];
+  var prev = Object.getOwnPropertyDescriptor({foo() { }}, 'foo').value;
 
   if ('function' === typeof prev) {
     updateObserversAndListeners(obj, key, prev, '__ember_observes__', removeObserver);
