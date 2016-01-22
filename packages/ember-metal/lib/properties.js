@@ -107,7 +107,9 @@ export function defineProperty(obj, keyName, desc, data/*, meta*/) {
         return metaFor(this).peekDescs(keyName).get(this, keyName);
       },
       set(value) {
-        return metaFor(this).peekDescs(keyName).set(this, keyName, value);
+        // throw TypeError('Sorry this isnt supported "right now"');
+        delete obj[keyName];
+        obj[keyName] = value;
       }
     });
 
@@ -131,8 +133,8 @@ export function defineProperty(obj, keyName, desc, data/*, meta*/) {
     meta.writeDescs(keyName, false);
     if (desc == null) {
 
+      meta.writeValues(keyName, data);
       if (isEnabled('mandatory-setter') && watching) {
-        meta.writeValues(keyName, data);
         Object.defineProperty(obj, keyName, {
           configurable: true,
           enumerable: true,
