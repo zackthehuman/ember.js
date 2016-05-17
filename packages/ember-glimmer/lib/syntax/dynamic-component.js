@@ -44,6 +44,7 @@ export class DynamicComponentSyntax extends StatementSyntax {
     if (isComponentHelper(nameOrHelper)) {
       args = nameOrHelper.args;
     }
+
     this.definition = new DynamicComponentLookup(args, isBlock);
     this.args = ArgsSyntax.build(args.positional.slice(1), args.named);
     this.templates = templates;
