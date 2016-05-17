@@ -1,6 +1,7 @@
 import { ArgsSyntax, StatementSyntax } from 'glimmer-runtime';
 import { ConstReference, isConst } from 'glimmer-reference';
 import { assert } from 'ember-metal/debug';
+import { isClosureComponentRef } from '../helpers/component';
 
 class DynamicComponentLookup {
   constructor(args) {
@@ -12,6 +13,10 @@ class DynamicComponentLookup {
 function dynamicComponentFor(args, { env }) {
   let nameRef = args.positional.at(0);
 
+  if (isClosureComponentRef(nameRef)) {
+    nameRef = nameRef.value().args.positional.at(0);
+  }
+
   if (isConst(nameRef)) {
     return new ConstReference(lookup(env, nameRef.value()));
   } else {
@@ -22,6 +27,14 @@ function dynamicComponentFor(args, { env }) {
 export class DynamicComponentSyntax extends StatementSyntax {
   constructor({ args, templates }) {
     super();
+
+    // Process closure component
+    let nameOrCell = args.positional.at(0);
+
+    if (isClosureComponentRef(nameOrCell)) {
+      args = nameOrCell.value().args;
+    }
+
     this.definition = new DynamicComponentLookup(args);
     this.args = ArgsSyntax.build(args.positional.slice(1), args.named);
     this.templates = templates;

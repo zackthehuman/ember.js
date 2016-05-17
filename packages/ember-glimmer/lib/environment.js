@@ -29,6 +29,7 @@ import { default as log } from './helpers/log';
 import { default as readonly } from './helpers/readonly';
 import { default as unbound } from './helpers/unbound';
 import { default as classHelper } from './helpers/-class';
+import { default as componentHelper } from './helpers/component';
 import { OWNER } from 'container/owner';
 
 const builtInHelpers = {
@@ -41,7 +42,8 @@ const builtInHelpers = {
   log,
   readonly,
   unbound,
-  '-class': classHelper
+  '-class': classHelper,
+  component: componentHelper
 };
 
 import { default as ActionModifierManager } from './modifiers/action';

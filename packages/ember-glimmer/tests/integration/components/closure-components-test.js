@@ -4,7 +4,7 @@ import { moduleFor, RenderingTest } from '../../utils/test-case';
 import assign from 'ember-metal/assign';
 import isEmpty from 'ember-metal/is_empty';
 
-moduleFor('@htmlbars Components test: closure components', class extends RenderingTest {
+moduleFor('Components test: closure components', class extends RenderingTest {
   ['@test renders with component helper']() {
     let expectedText = 'Hodi';
 
@@ -712,4 +712,4 @@ applyMixins(ClosureComponentMutableParamsTest,
   ])
 );
 
-moduleFor('@htmlbars Components test: closure components -- mutable params', ClosureComponentMutableParamsTest);
+moduleFor('Components test: closure components -- mutable params', ClosureComponentMutableParamsTest);
