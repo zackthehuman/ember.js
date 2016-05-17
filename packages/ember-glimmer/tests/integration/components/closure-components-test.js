@@ -21,7 +21,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText(expectedText);
   }
 
-  ['@test renders with component helper with invocation params, hash']() {
+  ['@htmlbars renders with component helper with invocation params, hash']() {
     this.registerComponent('-looked-up', {
       ComponentClass: Component.extend().reopenClass({
         positionalParams: ['name']
@@ -40,7 +40,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText('Hodi Hodari');
   }
 
-  ['@test renders with component helper with curried params, hash']() {
+  ['@htmlbars renders with component helper with curried params, hash']() {
     this.registerComponent('-looked-up', {
       ComponentClass: Component.extend().reopenClass({
         positionalParams: ['name']
@@ -146,7 +146,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText('Hodi');
   }
 
-  ['@test nested components overwrite named positional parameters']() {
+  ['@htmlbars nested components overwrite named positional parameters']() {
     this.registerComponent('-looked-up', {
       ComponentClass: Component.extend().reopenClass({
         positionalParams: ['name', 'age']
@@ -283,7 +283,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText('Inner 28');
   }
 
-  ['@test conflicting positional and hash parameters raise and assertion if in the same closure']() {
+  ['@htmlbars conflicting positional and hash parameters raise and assertion if in the same closure']() {
     this.registerComponent('-looked-up', {
       ComponentClass: Component.extend().reopenClass({
         positionalParams: ['name']
@@ -296,7 +296,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     }, 'You cannot specify both a positional param (at position 0) and the hash argument `name`.');
   }
 
-  ['@test conflicting positional and hash parameters does not raise an assertion if rerendered']() {
+  ['@htmlbars conflicting positional and hash parameters does not raise an assertion if rerendered']() {
     // In some cases, rerendering with a positional param used to cause an
     // assertion. This test checks it does not.
     this.registerComponent('-looked-up', {
@@ -327,7 +327,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText('Hodi Hodari');
   }
 
-  ['@test conflicting positional and hash parameters does not raise an assertion if in different closure']() {
+  ['@htmlbars conflicting positional and hash parameters does not raise an assertion if in different closure']() {
     this.registerComponent('-looked-up', {
       ComponentClass: Component.extend().reopenClass({
         positionalParams: ['name']
@@ -444,7 +444,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText(expectedText);
   }
 
-  ['@test renders with dot path and with rest positional parameters']() {
+  ['@htmlbars renders with dot path and with rest positional parameters']() {
     this.registerComponent('-looked-up', {
       ComponentClass: Component.extend().reopenClass({
         positionalParams: 'params'
@@ -479,7 +479,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText(`${expectedText},Hola`);
   }
 
-  ['@test renders with dot path and rest parameter does not leak'](assert) {
+  ['@htmlbars renders with dot path and rest parameter does not leak'](assert) {
     // In the original implementation, positional parameters were not handled
     // correctly causing the first positional parameter to be the closure
     // component itself.
@@ -581,7 +581,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText('Foo');
   }
 
-  ['@test parameters in a closure are mutable when closure is a param'](assert) {
+  ['@htmlbars parameters in a closure are mutable when closure is a param'](assert) {
     // This checks that a `(mut)` is added to parameters and attributes to
     // contextual components when it is a param.
 
@@ -634,7 +634,7 @@ class MutableParamTestGenerator {
 
   generate({ title, setup }) {
     return {
-      [`@test parameters in a closure are mutable when closure is a ${title}`](assert) {
+      [`@htmlbars parameters in a closure are mutable when closure is a ${title}`](assert) {
         this.registerComponent('change-button', {
           ComponentClass: Component.extend().reopenClass({
             positionalParams: ['val']
