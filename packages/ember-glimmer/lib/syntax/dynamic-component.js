@@ -37,6 +37,7 @@ export class DynamicComponentSyntax extends StatementSyntax {
     // Process closure component
     let nameOrCell = args.positional.at(0);
 
+    // This is always false!!
     if (isClosureComponentRef(nameOrCell)) {
       args = nameOrCell.value().args;
     }

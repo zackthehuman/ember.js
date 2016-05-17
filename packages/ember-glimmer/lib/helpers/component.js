@@ -1,9 +1,9 @@
 import { InternalHelperReference } from '../utils/references';
 
-export const COMPONENT_HELPER_SYMBOL = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
+export const COMPONENT_HELPER = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
 
 export function isClosureComponentRef(ref) {
-  return !!ref[COMPONENT_HELPER_SYMBOL];
+  return !!ref[COMPONENT_HELPER];
 }
 
 class ComponentHelperReference extends InternalHelperReference {
