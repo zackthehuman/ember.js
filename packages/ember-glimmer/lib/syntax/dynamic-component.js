@@ -10,12 +10,18 @@ class DynamicComponentLookup {
   }
 }
 
-function dynamicComponentFor(args, { env }) {
+function extractComponentNameReference(args) {
   let nameRef = args.positional.at(0);
 
   if (isClosureComponentRef(nameRef)) {
     nameRef = nameRef.value().args.positional.at(0);
   }
+
+  return nameRef;
+}
+
+function dynamicComponentFor(args, { env }) {
+  let nameRef = extractComponentNameReference(args);
 
   if (isConst(nameRef)) {
     return new ConstReference(lookup(env, nameRef.value()));
