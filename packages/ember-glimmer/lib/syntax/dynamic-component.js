@@ -10,6 +10,10 @@ class DynamicComponentLookup {
   }
 }
 
+function isComponentHelper(syntax) {
+  return syntax.type === 'helper' && syntax.ref && syntax.ref.parts && syntax.ref.parts[0] === 'component';
+}
+
 function extractComponentNameReference(args) {
   let nameRef = args.positional.at(0);
 
@@ -35,11 +39,10 @@ export class DynamicComponentSyntax extends StatementSyntax {
     super();
 
     // Process closure component
-    let nameOrCell = args.positional.at(0);
+    let nameOrHelper = args.positional.at(0);
 
-    // This is always false!!
-    if (isClosureComponentRef(nameOrCell)) {
-      args = nameOrCell.value().args;
+    if (isComponentHelper(nameOrHelper)) {
+      args = nameOrHelper.args;
     }
 
     this.definition = new DynamicComponentLookup(args);
