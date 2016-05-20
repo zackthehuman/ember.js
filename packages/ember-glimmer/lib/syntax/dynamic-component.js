@@ -52,6 +52,7 @@ export class DynamicComponentSyntax extends StatementSyntax {
   }
 
   compile(builder) {
+    debugger;
     builder.component.dynamic(this);
   }
 }
@@ -66,7 +67,15 @@ class DynamicComponentReference {
 
   value() {
     let { env, nameRef, isBlock } = this;
-    return lookup(env, nameRef.value(), isBlock);
+    let name;
+
+    if (isClosureComponentRef(nameRef)) {
+      name = nameRef.value().args.positional.at(0).value();
+    } else {
+      name = nameRef.value();
+    }
+
+    return lookup(env, name, isBlock);
   }
 }
 

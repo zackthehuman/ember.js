@@ -116,7 +116,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
     this.assertText('Hodi');
   }
 
-  ['@test updates when curried hash arguments is bound in block form']() {
+  ['@htmlbars updates when curried hash arguments is bound in block form']() {
     this.registerComponent('-looked-up', {
       template: '{{greeting}}'
     });
