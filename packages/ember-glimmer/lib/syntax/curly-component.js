@@ -1,4 +1,4 @@
-import { StatementSyntax, ValueReference } from 'glimmer-runtime';
+import { StatementSyntax, ValueReference, EvaluatedArgs, EvaluatedNamedArgs } from 'glimmer-runtime';
 import { AttributeBindingReference, RootReference, applyClassNameBinding } from '../utils/references';
 import { DIRTY_TAG, IS_DISPATCHING_ATTRS, HAS_BLOCK } from '../component';
 import { assert } from 'ember-metal/debug';
@@ -6,6 +6,7 @@ import isEnabled from 'ember-metal/features';
 import { meta as metaFor } from 'ember-metal/meta';
 import { watchKey } from 'ember-metal/watch_key';
 import processArgs from '../utils/process-args';
+import assign from 'ember-metal/assign';
 
 function aliasIdToElementId(args, props) {
   if (args.named.has('id')) {
@@ -37,23 +38,38 @@ class ComponentStateBucket {
   }
 }
 
+export function mergeInNewHash(original, updates) {
+  return assign({}, original, updates);
+}
+
 class CurlyComponentManager {
   create(definition, args, dynamicScope) {
     let parentView = dynamicScope.view;
 
     let klass = definition.ComponentClass;
     let curriedArgs = definition.curriedArgs;
+
     debugger;
-    let processedArgs = processArgs(args, curriedArgs, klass.positionalParams);
+
+    let combinedNamedArgs = EvaluatedNamedArgs.create({
+      map: mergeInNewHash(curriedArgs.map, args.named.map)
+    });
+
+    let combinedArgs = EvaluatedArgs.create({
+      positional: args.positional,
+      named: combinedNamedArgs
+    });
+
+    let processedArgs = processArgs(combinedArgs, klass.positionalParams);
     let { attrs, props } = processedArgs.value();
 
-    let curriedArgKeys = Object.keys(curriedArgs);
+    // let curriedArgKeys = Object.keys(curriedArgs);
 
-    curriedArgKeys.forEach((key) => {
-      if (props && props[key] === undefined) {
-        props[key] = curriedArgs[key];
-      }
-    });
+    // curriedArgKeys.forEach((key) => {
+    //   if (props && props[key] === undefined) {
+    //     props[key] = curriedArgs[key];
+    //   }
+    // });
 
     aliasIdToElementId(args, props);
 

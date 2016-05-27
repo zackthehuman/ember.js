@@ -1,6 +1,6 @@
 import { InternalHelperReference } from '../utils/references';
 import assign from 'ember-metal/assign';
-import { EvaluatedArgs } from 'glimmer-runtime';
+import { EvaluatedNamedArgs } from 'glimmer-runtime';
 
 export const COMPONENT_HELPER_SYMBOL = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
 
@@ -18,10 +18,14 @@ function collapseNamedArgs(closureComponent) {
   // get parent's args
   // merge own args over it (clobber them!)
   let parentNamedArgs = closureComponent.parent ? collapseNamedArgs(closureComponent.parent) : null;
-  let innerArgs = closureComponent.args.named.value();
+  let innerArgs = closureComponent.args.named;
 
   if (parentNamedArgs !== null) {
-    return mergeInNewHash(parentNamedArgs, innerArgs);
+    let combinedArgs = EvaluatedNamedArgs.create({
+      map: mergeInNewHash(parentNamedArgs.map, innerArgs.map)
+    });
+    debugger;
+    return combinedArgs;
   } else {
     return innerArgs;
   }
