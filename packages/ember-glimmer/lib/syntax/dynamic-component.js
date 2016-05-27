@@ -10,23 +10,8 @@ class DynamicComponentLookup {
   }
 }
 
-// function isComponentHelper(syntax) {
-//   return syntax.type === 'helper' && syntax.ref && syntax.ref.parts && syntax.ref.parts[0] === 'component';
-// }
-
-// function extractComponentNameReference(args) {
-//   debugger;
-//   let nameRef = args.positional.at(0);
-
-//   if (isClosureComponentRef(nameRef)) {
-//     nameRef = nameRef.value().args.positional.at(0);
-//   }
-
-//   return nameRef;
-// }
-
 function dynamicComponentFor(args, { env }, isBlock) {
-  let nameRef = args.positional.at(0); //extractComponentNameReference(args);
+  let nameRef = args.positional.at(0);
 
   if (isConst(nameRef)) {
     return new ConstReference(lookup(env, nameRef.value(), isBlock));
@@ -38,13 +23,6 @@ function dynamicComponentFor(args, { env }, isBlock) {
 export class DynamicComponentSyntax extends StatementSyntax {
   constructor({ args, templates, isBlock }) {
     super();
-
-    // Process closure component
-    // let nameOrHelper = args.positional.at(0);
-
-    // if (isComponentHelper(nameOrHelper)) {
-    //   args = nameOrHelper.args;
-    // }
 
     this.definition = new DynamicComponentLookup(args, isBlock);
     this.args = ArgsSyntax.build(args.positional.slice(1), args.named);
@@ -67,28 +45,23 @@ class DynamicComponentReference {
 
   value() {
     let { env, nameRef, isBlock } = this;
-    let maybeName = nameRef.value();
-    let curriedArgs;
-
-    if (isClosureComponentRef(maybeName)) {
-      console.log('Got a closure component!');
-      name = maybeName.resolveComponentName().value();
-      curriedArgs = maybeName.resolveCurriedArgs();
-      debugger;
-    } else {
-      name = nameRef.value();
-    }
-
-    return lookup(env, name, isBlock, curriedArgs);
+    return lookup(env, nameRef.value(), isBlock);
   }
 }
 
-function lookup(env, name, isBlock, curriedArgs) {
-  if (typeof name === 'string') {
+function lookup(env, name, isBlock) {
+  let nameType = typeof name;
+
+  if (nameType === 'string') {
     let componentDefinition = env.createComponentDefinition([name], isBlock);
     assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, componentDefinition);
 
-    componentDefinition.curriedArgs = curriedArgs;
+    return componentDefinition;
+  } else if (isClosureComponentRef(name)) {
+    let componentDefinition = env.createComponentDefinition([name.resolveComponentName().value()], isBlock);
+    assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, componentDefinition);
+
+    componentDefinition.curriedArgs = name.resolveCurriedArgs();
 
     return componentDefinition;
   } else {
