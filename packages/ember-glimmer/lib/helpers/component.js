@@ -1,4 +1,6 @@
 import { InternalHelperReference } from '../utils/references';
+import assign from 'ember-metal/assign';
+import { EvaluatedArgs } from 'glimmer-runtime';
 
 export const COMPONENT_HELPER_SYMBOL = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
 
@@ -9,12 +11,50 @@ export function isClosureComponentRef(ref) {
 class ComponentHelperReference extends InternalHelperReference {
   constructor() {
     super(...arguments);
-    this['ba564e81-ceda-4475-84a7-1c44f1c42c0e'] = true;
+  }
+}
+
+function collapseNamedArgs(closureComponent) {
+  // get parent's args
+  // merge own args over it (clobber them!)
+  let parentNamedArgs = closureComponent.parent ? collapseNamedArgs(closureComponent.parent) : null;
+  let innerArgs = closureComponent.args.named.value();
+
+  if (parentNamedArgs !== null) {
+    return mergeInNewHash(parentNamedArgs, innerArgs);
+  } else {
+    return innerArgs;
   }
 }
 
 function componentHelper(args) {
-  return { args };
+  let { positional } = args;
+  let firstArg = positional.at(0).value();
+  let parent;
+
+  if (isClosureComponentRef(firstArg)) {
+    parent = firstArg;
+  }
+
+  return {
+    [COMPONENT_HELPER_SYMBOL]: true,
+    args,
+    parent,
+    resolveComponentName() {
+      if (this.parent) {
+        return this.parent.resolveComponentName();
+      }
+
+      return this.args.positional.at(0);
+    },
+    resolveCurriedArgs() {
+      return collapseNamedArgs(this);
+    }
+  };
+}
+
+export function mergeInNewHash(original, updates) {
+  return assign({}, original, updates);
 }
 
 export default {

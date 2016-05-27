@@ -42,8 +42,18 @@ class CurlyComponentManager {
     let parentView = dynamicScope.view;
 
     let klass = definition.ComponentClass;
-    let processedArgs = processArgs(args, klass.positionalParams);
+    let curriedArgs = definition.curriedArgs;
+    debugger;
+    let processedArgs = processArgs(args, curriedArgs, klass.positionalParams);
     let { attrs, props } = processedArgs.value();
+
+    let curriedArgKeys = Object.keys(curriedArgs);
+
+    curriedArgKeys.forEach((key) => {
+      if (props && props[key] === undefined) {
+        props[key] = curriedArgs[key];
+      }
+    });
 
     aliasIdToElementId(args, props);
 

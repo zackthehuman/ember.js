@@ -3,7 +3,7 @@ import { assert } from 'ember-metal/debug';
 import EmptyObject from 'ember-metal/empty_object';
 import { ARGS } from '../component';
 
-export default function processArgs(args, positionalParamsDefinition) {
+export default function processArgs(args, curriedArgs, positionalParamsDefinition) {
   if (!positionalParamsDefinition || positionalParamsDefinition.length === 0 || args.positional.length === 0) {
     return SimpleArgs.create(args);
   } else if (typeof positionalParamsDefinition === 'string') {
