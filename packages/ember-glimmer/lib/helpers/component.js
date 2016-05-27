@@ -24,7 +24,7 @@ function collapseNamedArgs(closureComponent) {
     let combinedArgs = EvaluatedNamedArgs.create({
       map: mergeInNewHash(parentNamedArgs.map, innerArgs.map)
     });
-    debugger;
+
     return combinedArgs;
   } else {
     return innerArgs;
@@ -52,7 +52,8 @@ function componentHelper(args) {
       return this.args.positional.at(0);
     },
     resolveCurriedArgs() {
-      return collapseNamedArgs(this);
+      let collapsed = collapseNamedArgs(this);
+      return collapsed;
     }
   };
 }

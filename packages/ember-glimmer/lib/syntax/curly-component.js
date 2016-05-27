@@ -1,4 +1,5 @@
 import { StatementSyntax, ValueReference, EvaluatedArgs, EvaluatedNamedArgs } from 'glimmer-runtime';
+import { combine } from 'glimmer-reference';
 import { AttributeBindingReference, RootReference, applyClassNameBinding } from '../utils/references';
 import { DIRTY_TAG, IS_DISPATCHING_ATTRS, HAS_BLOCK } from '../component';
 import { assert } from 'ember-metal/debug';
@@ -49,8 +50,6 @@ class CurlyComponentManager {
     let klass = definition.ComponentClass;
     let curriedArgs = definition.curriedArgs;
 
-    debugger;
-
     let combinedNamedArgs = EvaluatedNamedArgs.create({
       map: mergeInNewHash(curriedArgs.map, args.named.map)
     });
@@ -63,15 +62,7 @@ class CurlyComponentManager {
     let processedArgs = processArgs(combinedArgs, klass.positionalParams);
     let { attrs, props } = processedArgs.value();
 
-    // let curriedArgKeys = Object.keys(curriedArgs);
-
-    // curriedArgKeys.forEach((key) => {
-    //   if (props && props[key] === undefined) {
-    //     props[key] = curriedArgs[key];
-    //   }
-    // });
-
-    aliasIdToElementId(args, props);
+    aliasIdToElementId(combinedArgs, props);
 
     props.renderer = parentView.renderer;
     props[HAS_BLOCK] = definition.isBlock;
@@ -97,6 +88,8 @@ class CurlyComponentManager {
     component.trigger('willRender');
 
     let bucket = new ComponentStateBucket(component, processedArgs);
+
+    bucket.curriedArgs = combinedArgs;
 
     if (args.named.has('class')) {
       bucket.classRef = args.named.get('class');
@@ -165,7 +158,11 @@ class CurlyComponentManager {
     component._transitionTo('hasElement');
   }
 
-  getTag({ component }) {
+  getTag({ component, curriedArgs }) {
+    if (curriedArgs) {
+      return combine([component[DIRTY_TAG], curriedArgs.tag]);
+    }
+
     return component[DIRTY_TAG];
   }
 
