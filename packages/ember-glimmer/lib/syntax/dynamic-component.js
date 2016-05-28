@@ -54,12 +54,13 @@ function lookup(env, name, isBlock) {
 
   if (nameType === 'string') {
     let componentDefinition = env.createComponentDefinition([name], isBlock);
-    assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, componentDefinition);
+    assert(`The component helper cannot be used without a valid component name. You used \"${name}\" via (component \"${name}\")`, componentDefinition);
 
     return componentDefinition;
   } else if (isClosureComponentRef(name)) {
-    let componentDefinition = env.createComponentDefinition([name.resolveComponentName().value()], isBlock);
-    assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, componentDefinition);
+    let componentName = name.resolveComponentName().value();
+    let componentDefinition = env.createComponentDefinition([componentName], isBlock);
+    assert(`The component helper cannot be used without a valid component name. You used \"${componentName}\" via (component \"${componentName}\")`, componentDefinition);
 
     componentDefinition.curriedArgs = name.resolveCurriedArgs();
 

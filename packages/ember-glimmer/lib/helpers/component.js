@@ -1,3 +1,4 @@
+import { assert } from 'ember-metal/debug';
 import { InternalHelperReference } from '../utils/references';
 import assign from 'ember-metal/assign';
 import { EvaluatedNamedArgs } from 'glimmer-runtime';
@@ -35,6 +36,11 @@ function componentHelper(args) {
   let { positional } = args;
   let firstArg = positional.at(0).value();
   let parent;
+
+  assert(
+    'Component path cannot be null in component helper',
+    firstArg
+  );
 
   if (isClosureComponentRef(firstArg)) {
     parent = firstArg;
