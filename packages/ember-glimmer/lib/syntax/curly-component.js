@@ -51,7 +51,7 @@ class CurlyComponentManager {
     let curriedArgs = definition.curriedArgs;
 
     let combinedNamedArgs = EvaluatedNamedArgs.create({
-      map: mergeInNewHash(curriedArgs.map, args.named.map)
+      map: mergeInNewHash((curriedArgs && curriedArgs.map) ? curriedArgs.map : {}, args.named.map)
     });
 
     let combinedArgs = EvaluatedArgs.create({
