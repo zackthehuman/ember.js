@@ -39,10 +39,6 @@ class ComponentStateBucket {
   }
 }
 
-export function mergeInNewHash(original, updates) {
-  return assign({}, original, updates);
-}
-
 class CurlyComponentManager {
   create(definition, args, dynamicScope) {
     let parentView = dynamicScope.view;
@@ -50,8 +46,10 @@ class CurlyComponentManager {
     let klass = definition.ComponentClass;
     let curriedArgs = definition.curriedArgs;
 
+    // TODO: Handle positional args.
+
     let combinedNamedArgs = EvaluatedNamedArgs.create({
-      map: mergeInNewHash((curriedArgs && curriedArgs.map) ? curriedArgs.map : {}, args.named.map)
+      map: assign({}, (curriedArgs && curriedArgs.map) ? curriedArgs.map : {}, args.named.map)
     });
 
     let combinedArgs = EvaluatedArgs.create({

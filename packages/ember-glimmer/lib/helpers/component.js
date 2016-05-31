@@ -3,32 +3,46 @@ import { InternalHelperReference } from '../utils/references';
 import assign from 'ember-metal/assign';
 import { EvaluatedNamedArgs } from 'glimmer-runtime';
 
-export const COMPONENT_HELPER_SYMBOL = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
+export const CLOSURE_COMPONENT = 'ba564e81-ceda-4475-84a7-1c44f1c42c0e';
 
-export function isClosureComponentRef(ref) {
-  return !!ref[COMPONENT_HELPER_SYMBOL];
+export function isClosureComponent(obj) {
+  return !!obj[CLOSURE_COMPONENT];
 }
 
-class ComponentHelperReference extends InternalHelperReference {
-  constructor() {
-    super(...arguments);
+class ClosureComponent {
+  static create({ args, parent }) {
+    return new ClosureComponent(...arguments);
   }
-}
 
-function collapseNamedArgs(closureComponent) {
-  // get parent's args
-  // merge own args over it (clobber them!)
-  let parentNamedArgs = closureComponent.parent ? collapseNamedArgs(closureComponent.parent) : null;
-  let innerArgs = closureComponent.args.named;
+  constructor({ args, parent }) {
+    this[CLOSURE_COMPONENT] = true;
+    this.args = args;
+    this.parent = parent;
+  }
 
-  if (parentNamedArgs !== null) {
-    let combinedArgs = EvaluatedNamedArgs.create({
-      map: mergeInNewHash(parentNamedArgs.map, innerArgs.map)
-    });
+  name() {
+    if (this.parent) {
+      return this.parent.name();
+    }
 
-    return combinedArgs;
-  } else {
-    return innerArgs;
+    return this.args.positional.at(0);
+  }
+
+  curriedArgs() {
+    let { parent, args } = this;
+
+    let parentCurriedArgs = parent ? parent.curriedArgs() : null;
+    let namedArgs = args.named;
+
+    if (parentCurriedArgs !== null) {
+      let combinedArgs = EvaluatedNamedArgs.create({
+        map: assign({}, parentCurriedArgs.map, namedArgs.map)
+      });
+
+      return combinedArgs;
+    } else {
+      return namedArgs;
+    }
   }
 }
 
@@ -42,35 +56,19 @@ function componentHelper(args) {
     firstArg
   );
 
-  if (isClosureComponentRef(firstArg)) {
+  if (isClosureComponent(firstArg)) {
     parent = firstArg;
   }
 
-  return {
-    [COMPONENT_HELPER_SYMBOL]: true,
+  return ClosureComponent.create({
     args,
-    parent,
-    resolveComponentName() {
-      if (this.parent) {
-        return this.parent.resolveComponentName();
-      }
-
-      return this.args.positional.at(0);
-    },
-    resolveCurriedArgs() {
-      let collapsed = collapseNamedArgs(this);
-      return collapsed;
-    }
-  };
-}
-
-export function mergeInNewHash(original, updates) {
-  return assign({}, original, updates);
+    parent
+  });
 }
 
 export default {
   isInternalHelper: true,
   toReference(args) {
-    return new ComponentHelperReference(componentHelper, args);
+    return new InternalHelperReference(componentHelper, args);
   }
 };

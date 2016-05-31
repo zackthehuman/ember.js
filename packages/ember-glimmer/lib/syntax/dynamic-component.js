@@ -1,7 +1,7 @@
 import { ArgsSyntax, StatementSyntax } from 'glimmer-runtime';
 import { ConstReference, isConst } from 'glimmer-reference';
 import { assert } from 'ember-metal/debug';
-import { isClosureComponentRef } from '../helpers/component';
+import { isClosureComponent } from '../helpers/component';
 
 class DynamicComponentLookup {
   constructor(args, isBlock) {
@@ -57,12 +57,12 @@ function lookup(env, name, isBlock) {
     assert(`The component helper cannot be used without a valid component name. You used \"${name}\" via (component \"${name}\")`, componentDefinition);
 
     return componentDefinition;
-  } else if (isClosureComponentRef(name)) {
-    let componentName = name.resolveComponentName().value();
+  } else if (isClosureComponent(name)) {
+    let componentName = name.name().value();
     let componentDefinition = env.createComponentDefinition([componentName], isBlock);
     assert(`The component helper cannot be used without a valid component name. You used \"${componentName}\" via (component \"${componentName}\")`, componentDefinition);
 
-    componentDefinition.curriedArgs = name.resolveCurriedArgs();
+    componentDefinition.curriedArgs = name.curriedArgs();
 
     return componentDefinition;
   } else {
