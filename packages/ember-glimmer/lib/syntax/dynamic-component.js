@@ -1,5 +1,6 @@
 import { ArgsSyntax, StatementSyntax } from 'glimmer-runtime';
 import { ConstReference, isConst, UNDEFINED_REFERENCE } from 'glimmer-reference';
+import { assert } from 'ember-metal/debug';
 
 function dynamicComponentFor(vm) {
   let env     = vm.env;
@@ -7,7 +8,11 @@ function dynamicComponentFor(vm) {
   let nameRef = args.positional.at(0);
 
   if (isConst(nameRef)) {
-    return new ConstReference(env.getComponentDefinition([nameRef.value()]));
+    let name = nameRef.value();
+    let definition = env.getComponentDefinition([name]);
+
+    assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, definition);
+    return new ConstReference(definition);
   } else {
     return new DynamicComponentReference({ nameRef, env });
   }
@@ -37,7 +42,10 @@ class DynamicComponentReference {
 
   value() {
     let { env, nameRef } = this;
-    return env.getComponentDefinition([nameRef.value()]);
+    let name = nameRef.value();
+    let definition = env.getComponentDefinition([name]);
+    assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, definition);
+    return definition;
   }
 
   get() {

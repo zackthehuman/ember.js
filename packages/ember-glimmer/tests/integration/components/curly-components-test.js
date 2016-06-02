@@ -1,5 +1,4 @@
 /* globals EmberDev */
-import isEnabled from 'ember-metal/features';
 import { set } from 'ember-metal/property_set';
 import { observer } from 'ember-metal/mixin';
 import { Component, compile } from '../../utils/helpers';
@@ -2068,18 +2067,6 @@ moduleFor('Components test: curly components', class extends RenderingTest {
 
     this.assertText('foo – bar');
 
-    if (isEnabled('mandatory-setter')) {
-      expectAssertion(() => {
-        component.foo = 'new foo';
-      }, /You must use Ember\.set\(\) to set the `foo` property \(of .+\) to `new foo`\./);
-
-      expectAssertion(() => {
-        component.bar = 'new bar';
-      }, /You must use Ember\.set\(\) to set the `bar` property \(of .+\) to `new bar`\./);
-
-      this.assertText('foo – bar');
-    }
-
     throws(() => {
       this.runTask(() => { component.set('foo', 'new foo'); });
     }, 'Cannot set the `foo` property (on component foo-bar) to `new foo`. The `foo` property came from an immutable binding in the template, such as {{foo-bar foo="string"}} or {{foo-bar foo=(if theTruth "truth" "false")}}.');
@@ -2115,14 +2102,6 @@ moduleFor('Components test: curly components', class extends RenderingTest {
     this.runTask(() => this.rerender());
 
     this.assertText('initial value - initial value');
-
-    if (isEnabled('mandatory-setter')) {
-      expectAssertion(() => {
-        component.bar = 'foo-bar';
-      }, /You must use Ember\.set\(\) to set the `bar` property \(of .+\) to `foo-bar`\./);
-
-      this.assertText('initial value - initial value');
-    }
 
     this.runTask(() => { component.set('bar', 'updated value'); });
 

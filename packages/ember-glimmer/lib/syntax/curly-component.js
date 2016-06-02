@@ -97,15 +97,22 @@ class CurlyComponentManager {
     return bucket;
   }
 
-  ensureCompilable(definition, bucket) {
+  ensureCompilable(definition, bucket, env) {
     if (definition.template) {
       return definition;
     }
 
     let { component } = bucket;
-    let template = component.layout;
+    let TemplateFactory = component.layout;
+    let template;
     let owner = getOwner(component);
-    if (!template) {
+
+    // If the user has supplied their own layout property we must
+    // create an instance of the wrapper class with the env to go back into
+    // the runtime compiler phase :(
+    if (TemplateFactory) {
+      template = new TemplateFactory(env);
+    } else {
       let layoutName = component.layoutName && get(component, 'layoutName');
       if (layoutName) {
         template = owner.lookup('template:' + layoutName);
