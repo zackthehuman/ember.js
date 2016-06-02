@@ -71,6 +71,61 @@ moduleFor('Components test: curly components', class extends RenderingTest {
     }
   }
 
+  ['@test can specify template with `layoutName` property']() {
+    let FooBarComponent = Component.extend({
+      elementId: 'blahzorz',
+      layoutName: 'fizz-bar',
+      init() {
+        this._super(...arguments);
+        this.local = 'hey';
+      }
+    });
+
+    this.registerTemplate('fizz-bar', `FIZZ BAR {{local}}`);
+
+    this.registerComponent('foo-bar', { ComponentClass: FooBarComponent });
+
+    this.render('{{foo-bar}}');
+
+    this.assertText('FIZZ BAR hey');
+  }
+
+  ['@test can specify template with `defaultLayout` property [DEPRECATED]']() {
+    expectDeprecation(/Specifying `defaultLayout` to .* is deprecated. Please use `layout` instead/);
+    let FooBarComponent = Component.extend({
+      elementId: 'blahzorz',
+      defaultLayout: compile('much wat {{lulz}}'),
+      init() {
+        this._super(...arguments);
+        this.lulz = 'hey';
+      }
+    });
+
+    this.registerComponent('foo-bar', { ComponentClass: FooBarComponent });
+
+    this.render('{{foo-bar}}');
+
+    this.assertText('much wat hey');
+  }
+
+  ['@test layout takes precedence over defaultLayout']() {
+    let FooBarComponent = Component.extend({
+      elementId: 'blahzorz',
+      layout: compile('so much layout wat {{lulz}}'),
+      defaultLayout: compile('much wat {{lulz}}'),
+      init() {
+        this._super(...arguments);
+        this.lulz = 'hey';
+      }
+    });
+
+    this.registerComponent('foo-bar', { ComponentClass: FooBarComponent });
+
+    this.render('{{foo-bar}}');
+
+    this.assertText('so much layout wat hey');
+  }
+
   ['@test passing undefined elementId results in a default elementId'](assert) {
     let FooBarComponent = Component.extend({
       tagName: 'h1'
