@@ -178,9 +178,10 @@ export default class Environment extends GlimmerEnvironment {
 
       if (ComponentClass || layout) {
         definition = this._components[name] = new CurlyComponentDefinition(name, ComponentClass, layout);
-      } else if (!this.hasHelper(name)) {
-        assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, !!(ComponentClass || layout));
       }
+      // else if (!this.hasHelper(name)) {
+      //   assert(`Glimmer error: Could not find component named "${name}" (no component or template with that name was found)`, !!(ComponentClass || layout));
+      // }
     }
 
     return definition;

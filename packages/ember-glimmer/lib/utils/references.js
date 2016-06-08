@@ -76,7 +76,7 @@ export class RootReference extends ConstReference {
   }
 }
 
-class PropertyReference extends CachedReference { // jshint ignore:line
+export class PropertyReference extends CachedReference { // jshint ignore:line
   constructor(parentReference, propertyKey) {
     super();
 

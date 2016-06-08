@@ -361,7 +361,7 @@ moduleFor('Components test: closure components', class extends RenderingTest {
       this.render('{{component (component compName)}}', {
         compName: 'not-a-component'
       });
-    }, 'The component helper cannot be used without a valid component name. You used "not-a-component" via (component compName)');
+    }, /The component helper cannot be used without a valid component name. You used "not-a-component" via \(component .*\)/);
   }
 
   ['@test renders with dot path']() {

@@ -51,8 +51,10 @@ class ClosureComponent {
   getArgs() {
     let { named, positional } = this.args;
     let namedMap = named.map;
-    let positionalValues = positional.values;
-    let parent = this.args.positional.at(0).value();
+    // Drop the first positional argument because it is either the component name
+    // or a "parent" closure component.
+    let [, ...positionalValues] = positional.values;
+    let parent = positional.at(0).value();
 
     if (isClosureComponent(parent)) {
       let parentArgs = parent.getArgs();
@@ -61,7 +63,7 @@ class ClosureComponent {
       mergedPositional.splice(0, positionalValues.length, ...positionalValues);
 
       return {
-        named: assign({}, namedMap, parentArgs.named),
+        named: assign({}, parentArgs.named, namedMap),
         positional: mergedPositional
       };
     }

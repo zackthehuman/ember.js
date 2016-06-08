@@ -1,7 +1,9 @@
-import { StatementSyntax, ValueReference } from 'glimmer-runtime';
+import { StatementSyntax, ValueReference, EvaluatedArgs, EvaluatedNamedArgs, EvaluatedPositionalArgs } from 'glimmer-runtime';
+import { combine } from 'glimmer-reference';
 import { AttributeBindingReference, RootReference, applyClassNameBinding } from '../utils/references';
 import { DIRTY_TAG, IS_DISPATCHING_ATTRS, HAS_BLOCK } from '../component';
 import { assert } from 'ember-metal/debug';
+import assign from 'ember-metal/assign';
 import processArgs from '../utils/process-args';
 import { getOwner } from 'container/owner';
 import { privatize as P } from 'container/registry';
@@ -30,6 +32,30 @@ export class CurlyComponentSyntax extends StatementSyntax {
   }
 }
 
+function mergeArgs(args, curriedArgs) {
+  if (!curriedArgs) {
+    return args;
+  }
+
+  let { named, positional } = args;
+  let curriedNamed = curriedArgs.named;
+  let curriedPositional = curriedArgs.positional;
+  let [...mergedPositional] = curriedPositional.values;
+
+  mergedPositional.splice(0, positional.values.length, ...positional.values);
+
+  let mergedNamed = assign({}, curriedNamed.map, named.map);
+
+  return EvaluatedArgs.create({
+    named: EvaluatedNamedArgs.create({
+      map: mergedNamed
+    }),
+    positional: EvaluatedPositionalArgs.create({
+      values: mergedPositional
+    })
+  });
+}
+
 class ComponentStateBucket {
   constructor(component, args) {
     this.component = component;
@@ -42,6 +68,10 @@ class ComponentStateBucket {
 class CurlyComponentManager {
   create(definition, args, dynamicScope, hasBlock) {
     let parentView = dynamicScope.view;
+
+    let mergedArgs = mergeArgs(args, args.internal['args']);
+
+    args = mergedArgs;
 
     let klass = definition.ComponentClass;
     let processedArgs = processArgs(args, klass.positionalParams);
@@ -162,8 +192,8 @@ class CurlyComponentManager {
     component._transitionTo('hasElement');
   }
 
-  getTag({ component }) {
-    return component[DIRTY_TAG];
+  getTag({ component, args }) {
+    return combine([component[DIRTY_TAG], args.tag]);
   }
 
   didCreate({ component }) {
