@@ -32,30 +32,6 @@ export class CurlyComponentSyntax extends StatementSyntax {
   }
 }
 
-function mergeArgs(args, curriedArgs) {
-  if (!curriedArgs) {
-    return args;
-  }
-
-  let { named, positional } = args;
-  let curriedNamed = curriedArgs.named;
-  let curriedPositional = curriedArgs.positional;
-  let [...mergedPositional] = curriedPositional.values;
-
-  mergedPositional.splice(0, positional.values.length, ...positional.values);
-
-  let mergedNamed = assign({}, curriedNamed.map, named.map);
-
-  return EvaluatedArgs.create({
-    named: EvaluatedNamedArgs.create({
-      map: mergedNamed
-    }),
-    positional: EvaluatedPositionalArgs.create({
-      values: mergedPositional
-    })
-  });
-}
-
 class ComponentStateBucket {
   constructor(component, args) {
     this.component = component;
@@ -68,10 +44,6 @@ class ComponentStateBucket {
 class CurlyComponentManager {
   create(definition, args, dynamicScope, hasBlock) {
     let parentView = dynamicScope.view;
-
-    let mergedArgs = mergeArgs(args, args.internal['args']);
-
-    args = mergedArgs;
 
     let klass = definition.ComponentClass;
     let processedArgs = processArgs(args, klass.positionalParams);

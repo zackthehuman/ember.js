@@ -63,14 +63,7 @@ class DynamicComponentReference {
 
     return {
       definition: this.getComponentDefinition(name),
-      args: args ? EvaluatedArgs.create({
-        named: EvaluatedNamedArgs.create({
-          map: args.named || {}
-        }),
-        positional: EvaluatedPositionalArgs.create({
-          values: args.positional
-        })
-      }) : EvaluatedArgs.empty()
+      args: args
     };
   }
 

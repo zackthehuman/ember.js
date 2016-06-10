@@ -1,5 +1,5 @@
 import { CachedReference } from '../utils/references';
-import { NULL_REFERENCE, UNDEFINED_REFERENCE } from 'glimmer-runtime';
+import { NULL_REFERENCE, UNDEFINED_REFERENCE, EvaluatedArgs, EvaluatedNamedArgs, EvaluatedPositionalArgs } from 'glimmer-runtime';
 import EmberError from 'ember-metal/error';
 import assign from 'ember-metal/assign';
 import run from 'ember-metal/run_loop';
@@ -58,20 +58,23 @@ class ClosureComponent {
 
     if (isClosureComponent(parent)) {
       let parentArgs = parent.getArgs();
-      let [...mergedPositional] = parentArgs.positional;
 
-      mergedPositional.splice(0, positionalValues.length, ...positionalValues);
+      parentArgs.push(EvaluatedArgs.create({
+        named: named,
+        positional: EvaluatedPositionalArgs.create({
+          values: positionalValues
+        })
+      }));
 
-      return {
-        named: assign({}, parentArgs.named, namedMap),
-        positional: mergedPositional
-      };
+      return parentArgs;
     }
 
-    return {
-      named: namedMap,
-      positional: positionalValues
-    };
+    return [EvaluatedArgs.create({
+      named: named,
+      positional: EvaluatedPositionalArgs.create({
+        values: positionalValues
+      })
+    })];
   }
 }
 

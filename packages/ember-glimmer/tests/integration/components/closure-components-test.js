@@ -285,7 +285,9 @@ moduleFor('Components test: closure components', class extends RenderingTest {
 
   ['@test conflicting positional and hash parameters raise and assertion if in the same closure']() {
     this.registerComponent('-looked-up', {
-      ComponentClass: Component.extend().reopenClass({
+      ComponentClass: Component.extend({
+        tagName: 'div'
+      }).reopenClass({
         positionalParams: ['name']
       }),
       template: '{{greeting}} {{name}}'
